@@ -1,0 +1,466 @@
+# 数据汇报 接口文档 v2019.03.07
+2019.03.07
+
+### 规范说明
+域名：
+```
+接口地址
+http://192.168.0.140:8089
+swagger
+http://192.168.0.140:8089/swagger-ui.html
+```
+### 目录
+1. 保存数据汇报模板
+2. 根据部门数据汇报模板
+3. 提交汇报
+4. 根据ID获取汇报
+5. 获取个人汇报历史记录
+6. 获取员工ID获取员工汇报
+7. 获取直属员工汇报列表
+
+***
+### 1. 保存数据汇报模板
+#### 描述
+保存数据汇报模板
+#### 请求
+POST /office/dataReport/template
+新增示例
+```json
+    {
+        "departmentId": "402880086951e719016951f08e570003",
+        "name": "Java模板",
+        "period": "DAY",
+        "days": [0,1,3], 
+        "startDate": 0,
+        "endDate": 0,
+        "startTime": 8,
+        "endTime": 24,
+        "remindContext": "提醒内容",
+        "remindNotification": true,
+        "remindTime": 60,
+        "items": [
+            {
+                "name": "修理bug",
+                "target": 5,
+                "unit": "个",
+                "ratingSettings": [
+                 {
+                    "value": 10,
+                    "score": 100,
+                    "operator": "PLUS"
+                 }
+                ]
+            }, {
+              "name": "测试bug",
+               "target": 10,
+               "unit": "个"
+            }
+         ]
+      
+    }
+```
+修改参数示例：主要区别是要带上ID
+```json
+{
+  "name": "Java模板",
+  "departmentId": "402880086951e719016951f08e570003",
+  "period": "DAY",
+  "startTime": 8,
+  "endTime": 24,
+  "startDate": 0,
+  "endDate": 0,
+  "days": [
+    0,
+    1,
+    3
+  ],
+  "remindNotification": true,
+  "remindTime": 60,
+  "remindContext": "提醒内容",
+  "items": [
+    {
+      "templateId": "4028800c69847bd7016984a6859a0000",
+      "name": "修理bug",
+      "unit": "个",
+      "target": 5,
+      "ratingSettings": [
+        {
+          "templateItemId": "4028800c69851c9b016985249cf70010",
+          "value": 10,
+          "score": 100,
+          "operator": "PLUS",
+          "id": "4028800c69851c9b016985249d040011"
+        }
+      ],
+      "id": "4028800c69851c9b016985249cf70010"
+    },
+    {
+      "templateId": "4028800c69847bd7016984a6859a0000",
+      "name": "测试bug",
+      "unit": "个",
+      "target": 10,
+      "ratingSettings": [],
+      "id": "4028800c69851c9b016985249d040012"
+    }
+  ],
+  "id": "4028800c69847bd7016984a6859a0000"
+}
+```
+参数说明
+```
+    {
+        "departmentId": "部门ID",
+        "name": "模板名称",
+        "period": "提交周期"，类型：DAY("天")WEEK("周")MONTH("月");
+        "days": [0,1,3], 提交日期，0-6 代表 周一至周日。[0,1,3] = [周一，周二，周四]
+        "startDate": 0,开始日期，当周期为"周"时为0-6，周期为月时为：1-30
+        "endDate": 0,结束日期
+        "startTime": 8,开始时间 8 = 8：00
+        "endTime": 24,结束时间 24 = 24：00
+        "remindContext": "提醒内容",
+        "remindNotification": true,是否开始提醒
+        "remindTime": 60,截止时间前一小时=60，截止时间前两小时=120
+        "items": [ //数据项目
+            {
+                "name": "名称",
+                "target": 达标值,
+                "unit": "单位",
+                "ratingSettings": [ 考核设置
+                 {
+                    "value": 考核数值,
+                    "score": 分数,
+                    "operator": "运算符" PLUS：加，SUBTRACT：减
+                 }
+            }, {
+                "name": "名称",
+                "target": 达标值,
+                "unit": "单位"
+            }
+         ]
+      
+    }
+```
+#### 响应
+200 
+
+<hr />
+
+### 2. 根据部门数据汇报模板
+#### 描述
+根据部门id获取数据汇报模板 
+
+#### 请求
+GET /office/dataReport/template/{departmentId}
+#### 响应
+```json
+{
+  "name": "Java模板",
+  "departmentId": "402880086951e719016951f08e570003",
+  "companyId": "402880086951cc28016951d35f140000",
+  "period": "DAY",
+  "startTime": 8,
+  "endTime": 24,
+  "startDate": 0,
+  "endDate": 0,
+  "days": [
+    0,
+    1,
+    3
+  ],
+  "remindNotification": true,
+  "remindTime": 60,
+  "remindContext": "提醒内容",
+  "items": [
+    {
+      "templateId": "4028800c69847bd7016984a6859a0000",
+      "name": "修理bug",
+      "unit": "个",
+      "target": 5,
+      "ratingSettings": [
+        {
+          "templateItemId": "4028800c69851c9b016985249cf70010",
+          "value": 10,
+          "score": 100,
+          "operator": "PLUS",
+          "id": "4028800c69851c9b016985249d040011",
+          "createTime": "2019-03-16 14:16:03"
+        }
+      ],
+      "id": "4028800c69851c9b016985249cf70010",
+      "createTime": "2019-03-16 14:16:03"
+    },
+    {
+      "templateId": "4028800c69847bd7016984a6859a0000",
+      "name": "测试bug",
+      "unit": "个",
+      "target": 10,
+      "ratingSettings": [],
+      "id": "4028800c69851c9b016985249d040012",
+      "createTime": "2019-03-16 14:16:03"
+    }
+  ],
+  "id": "4028800c69847bd7016984a6859a0000",
+  "createTime": "2019-03-16 11:58:20"
+}
+```
+
+<hr />
+
+### 3. 提交汇报
+#### 描述
+提交汇报
+#### 请求
+POST /office/dataReport/submitReport
+
+```json
+{
+  "templateId": "模板ID",
+  "items": [
+    {
+      "id": "数据项ID",
+      "value": 10
+    }
+  ]
+ }
+```
+#### 响应
+```json
+200
+```
+<hr />
+
+
+### 4. 根据ID获取汇报
+#### 描述
+根据ID获取汇报
+#### 请求
+GET /office/dataReport/{id
+
+```
+{
+  "id": "4028800c697b520b01697b54192c0000",
+  "employeeId": "员工ID",
+  "employeeName": "员工名称",
+  "employeeAvatar": "员工头像",
+  "companyId": "402880086951cc28016951d35f140000",
+  "departmentId": "402880086950ab4c016950b1a4380001",
+  "templateId": "4028800c697acdf101697ad3c1510000",
+  "status": "UNREAD",日报状态：UNREAD("未读"),READ("已读"),REJECT("驳回"),CONFIRM("已确认"),WITHDRAW("已撤回"),
+  "name": "汇报名称",
+  "remark": "备注",
+  "items": [
+    {
+      "dataReportId": "4028800c697b520b01697b54192c0000",
+      "name": "数据项名称",
+      "value": 10,//填写值
+      "unit": "单位",
+      "target": 0,//达标值
+      "id": "4028800c697b520b01697b5419890001"
+    }
+  ]
+
+}
+```
+#### 响应
+```json
+200
+```
+<hr />
+
+### 5. 获取个人汇报历史记录
+#### 描述
+#### 请求
+GET /office/dataReport/myHistory
+
+```json
+[
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697acdf101697ad7383d0002",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697acdf101697ad7389d0003",
+        "createTime": "2019-03-14 14:15:19"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697acdf101697ad7383d0002",
+    "createTime": "2019-03-14 14:15:19"
+  },
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697b520b01697b54192c0000",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697b520b01697b5419890001",
+        "createTime": "2019-03-14 16:31:43"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697b520b01697b54192c0000",
+    "createTime": "2019-03-14 16:31:43"
+  }
+]
+```
+#### 响应
+```json
+200
+```
+<hr />
+
+
+### 6. 获取员工ID获取员工汇报
+#### 描述
+#### 请求
+GET /office/dataReport/employee/{id}
+
+```json
+[
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697acdf101697ad7383d0002",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697acdf101697ad7389d0003",
+        "createTime": "2019-03-14 14:15:19"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697acdf101697ad7383d0002",
+    "createTime": "2019-03-14 14:15:19"
+  },
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697b520b01697b54192c0000",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697b520b01697b5419890001",
+        "createTime": "2019-03-14 16:31:43"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697b520b01697b54192c0000",
+    "createTime": "2019-03-14 16:31:43"
+  }
+]
+```
+#### 响应
+```json
+200
+```
+<hr />
+
+
+### 7. 获取直属员工汇报列表
+#### 描述
+获取当前员工所有直属下属的汇报列表
+#### 请求
+GET /office/dataReport/getDirectlyEmployeeReport
+
+```json
+[
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697acdf101697ad7383d0002",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697acdf101697ad7389d0003",
+        "createTime": "2019-03-14 14:15:19"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697acdf101697ad7383d0002",
+    "createTime": "2019-03-14 14:15:19"
+  },
+  {
+    "employeeId": "402880086950ab4c016950b1a4460002",
+    "employeeName": "管理员",
+    "employeeAvatar": null,
+    "companyId": "402880086951cc28016951d35f140000",
+    "departmentId": "402880086950ab4c016950b1a4380001",
+    "templateId": "4028800c697acdf101697ad3c1510000",
+    "status": "UNREAD",
+    "name": "管理员的技术部模板",
+    "remark": null,
+    "items": [
+      {
+        "dataReportId": "4028800c697b520b01697b54192c0000",
+        "name": "修理bug",
+        "value": 10,
+        "unit": "个",
+        "target": 0,
+        "id": "4028800c697b520b01697b5419890001",
+        "createTime": "2019-03-14 16:31:43"
+      }
+    ],
+    "employeeIds": null,
+    "id": "4028800c697b520b01697b54192c0000",
+    "createTime": "2019-03-14 16:31:43"
+  }
+]
+```
+#### 响应
+```json
+200
+```
+<hr />
